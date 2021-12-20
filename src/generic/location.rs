@@ -1,10 +1,10 @@
-use std::str::FromStr;
 use itertools::Itertools;
+use std::str::FromStr;
 
 use crate::error::{AocError, Result};
 
 /// A `Location` specifies a pair of [usize], [usize] representing a `row` and
-/// `column` respectively. Primarily this is used to interact with [GridLike]
+/// `column` respectively. Primarily this is used to interact with [GridLike](super::grid::GridLike)
 /// things, and has some additional functionality beyond a generic `Point`,
 /// like the ability to iterate over neighboring `Locations`
 #[derive(Debug, Clone, Copy, Default, Hash, Eq, PartialEq)]

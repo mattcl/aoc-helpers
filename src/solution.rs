@@ -1,12 +1,13 @@
-use std::{fmt::Display, env};
 use serde::Serialize;
 use serde_json;
+use std::{env, fmt::Display};
 
 /// This struct enables printing a given solution in either plaintext or JSON,
 /// depending on the presence of the `AOC_OUTPUT_JSON` ENV var. Its main purpose
 /// is to standardize the output for consuption by the CI system.
 ///
-/// Usage:
+/// # Usage
+///
 /// ```
 /// use serde_json;
 /// use aoc_helpers::Solution;

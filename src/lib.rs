@@ -3,8 +3,9 @@
 //! these problems, so there are no guarantees of compatibility.
 pub use solution::Solution;
 pub use util::load_input;
+pub use util::parse_input;
 
 pub mod error;
 pub mod generic;
-pub mod util;
 pub mod solution;
+pub mod util;

@@ -118,7 +118,9 @@ where
         let cols = value.get(0).map(|c| c.len()).unwrap_or_default();
 
         if value.iter().any(|c| c.len() != cols) {
-            return Err(AocError::GridConstructionError("Not all rows are the same length".into()));
+            return Err(AocError::GridConstructionError(
+                "Not all rows are the same length".into(),
+            ));
         }
 
         Ok(Self {

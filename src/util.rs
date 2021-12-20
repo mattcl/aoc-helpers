@@ -25,7 +25,7 @@ pub fn load_input(default_day: &str) -> Result<Vec<String>> {
         // file.
         match e {
             AocError::VarError(_) => load_named_input(default_day, "input"),
-            _ => Err(e)
+            _ => Err(e),
         }
     })
 }
@@ -38,12 +38,7 @@ pub fn load_named_input(day: &str, name: &str) -> Result<Vec<String>> {
     for entry in fs::read_dir(examples_dir)? {
         let entry = entry?;
         let path = entry.path();
-        if path.is_dir()
-            && entry
-                .file_name()
-                .into_string()?
-                .starts_with(day)
-        {
+        if path.is_dir() && entry.file_name().into_string()?.starts_with(day) {
             if let Some(file) = path.join(name).to_str() {
                 return load_lines(file);
             }

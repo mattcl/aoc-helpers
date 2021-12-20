@@ -16,7 +16,6 @@ pub enum AocError {
     ParseLocationError(String),
 
     // Generic Errors below
-
     /// Represents all other cases of IO errors
     IOError(std::io::Error),
 
@@ -49,8 +48,12 @@ impl std::error::Error for AocError {
 impl std::fmt::Display for AocError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
-            AocError::GridConstructionError(ref msg) => write!(f, "Unable to construct Grid: {}", msg),
-            AocError::InputMissing(ref input) => write!(f, "Specified input was missing: {}", input),
+            AocError::GridConstructionError(ref msg) => {
+                write!(f, "Unable to construct Grid: {}", msg)
+            }
+            AocError::InputMissing(ref input) => {
+                write!(f, "Specified input was missing: {}", input)
+            }
             AocError::ParseLocationError(ref msg) => write!(f, "Failed to parse Location: {}", msg),
 
             // Generic
