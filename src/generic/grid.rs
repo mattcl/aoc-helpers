@@ -107,6 +107,11 @@ where
     }
 }
 
+impl<T> Scalable for Grid<T>
+where
+    T: Debug + Clone,
+{ }
+
 impl<T> TryFrom<Vec<Vec<T>>> for Grid<T>
 where
     T: Debug + Clone,
@@ -136,7 +141,6 @@ mod tests {
     use super::*;
 
     type GTest = Grid<usize>;
-    impl Scalable for GTest {}
 
     #[test]
     fn general() {
