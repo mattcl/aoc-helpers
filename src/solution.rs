@@ -1,6 +1,8 @@
 use serde::Serialize;
 use serde_json;
-use std::{env, fmt::Display};
+use std::{env, fmt::{Display, Debug}, convert::TryFrom};
+
+use crate::load_input;
 
 /// This struct enables printing a given solution in either plaintext or JSON,
 /// depending on the presence of the `AOC_OUTPUT_JSON` ENV var. Its main purpose
@@ -85,5 +87,108 @@ where
 {
     fn from(value: (T, G)) -> Self {
         Self::new(value.0, value.1)
+    }
+}
+
+/// This trait is intended to enforce a standard interface for solutions such
+/// that they are easier to consume by various components (examples, tests,
+/// benchmarks, etc.).
+pub trait Solver: TryFrom<Vec<String>>
+where
+    <Self as TryFrom<Vec<String>>>::Error: Debug
+{
+    /// The title of this puzzle. Used for displaying in benchmarks and whatnot
+    const ID: &'static str;
+
+    /// The numerical day associated with this puzzle. Used for input loading
+    /// and labeling.
+    const DAY: usize;
+
+    /// The type of the solution for part one
+    type P1: Display + Serialize + PartialEq;
+
+    /// The type of the solution for part two
+    type P2: Display + Serialize + PartialEq;
+
+    /// Produces the solution for part one. May panic. The reference to self
+    /// here is mutable because it's possible the solve may have to mutate the
+    /// solver for convenience or otherwise.
+    fn part_one(&mut self) -> Self::P1;
+
+    /// Produces the solution for part two. May panic. The reference to self
+    /// here is mutable because it's possible the solve may have to mutate the
+    /// solver for convenience or otherwise.
+    fn part_two(&mut self) -> Self::P2;
+
+    /// Returns a complete label for this puzzle in the form `001 my puzzle id`
+    fn solver_label() -> String {
+        format!("{} {}", <Self as Solver>::solver_day(), <Self as Solver>::ID)
+    }
+
+    /// Returns the [String] representaiton of the day, zero-padded to len 3
+    fn solver_day() -> String {
+        format!("{:03}", <Self as Solver>::DAY)
+    }
+
+    /// Attempts to construct an instance of this solver from using the default
+    /// input path determined by `ID`. This function can panic! This is
+    /// necessary for selectively solving part one or part two for benchmarks.
+    fn instance() -> Self {
+        let day = <Self as Solver>::solver_day();
+        let input = load_input(&day).expect("could not load input");
+        Self::try_from(input).expect("could not parse input")
+    }
+
+    /// Attempts to load the input and produces the combined part one and two
+    /// [Solution]. This function will panic if the input can not be loaded or
+    /// if the implementor cannot be constructed from the input. This may panic
+    /// in the event the `part_one` or `part_two` implementations panic.
+    /// Basically, you have to assume this function can panic!
+    fn solve() -> Solution<Self::P1, Self::P2> {
+        let mut solver = <Self as Solver>::instance();
+
+        Solution::new(solver.part_one(), solver.part_two())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    mod solver {
+        use crate::error::AocError;
+
+        use super::super::*;
+
+        #[derive(Debug, Clone, Copy, Default)]
+        pub struct Foo {}
+
+        impl TryFrom<Vec<String>> for Foo {
+            type Error = AocError;
+
+            fn try_from(_: Vec<String>) -> Result<Self, Self::Error> {
+                Ok(Foo {})
+            }
+        }
+
+        impl Solver for Foo {
+            const ID: &'static str = "A name";
+            const DAY: usize = 1;
+
+            type P1 = usize;
+            type P2 = usize;
+
+            fn part_one(&mut self) -> Self::P1 {
+                0
+            }
+
+            fn part_two(&mut self) -> Self::P2 {
+                1
+            }
+        }
+
+        #[test]
+        fn basics() {
+            assert_eq!(Foo::solver_day(), String::from("001"));
+            assert_eq!(Foo::solver_label(), String::from("001 A name"));
+        }
     }
 }
