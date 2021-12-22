@@ -1,6 +1,6 @@
 [package]
 name = "aoc_helpers"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Matt Chun-Lum <matt@questionable.engineering>"]
 edition = "2018"
 
