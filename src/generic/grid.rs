@@ -80,6 +80,22 @@ pub struct Grid<T> {
     pub cols: usize,
 }
 
+impl<T> Grid<T>
+where
+    T: Debug + Clone,
+{
+    pub fn new(locations: Vec<Vec<T>>) -> Self {
+        let rows = locations.len();
+        let cols = locations.first().map(|r| r.len()).unwrap_or_default();
+
+        Grid {
+            locations,
+            rows,
+            cols
+        }
+    }
+}
+
 impl<T> GridLike for Grid<T>
 where
     T: Debug + Clone,
