@@ -60,7 +60,7 @@ use crate::error::{AocError, Result};
         use std::time::Duration;
 
         $(
-            aoc_bench!($name, $solver, $($description),+);
+            aoc_helpers::aoc_bench!($name, $solver, $($description),+);
         )+
 
         pub fn aoc_combined(c: &mut Criterion) {
