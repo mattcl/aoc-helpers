@@ -57,6 +57,7 @@ use crate::error::{AocError, Result};
 #[macro_export] macro_rules! aoc_benches {
     ($comb_seconds:literal, $(($name:ident, $solver:ty, $($description:literal),+)),+) => {
         use criterion::{criterion_group, Criterion};
+        use std::time::Duration;
 
         $(
             aoc_bench!($name, $solver, $($description),+);
