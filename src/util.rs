@@ -6,6 +6,84 @@ use std::str::FromStr;
 
 use crate::error::{AocError, Result};
 
+#[macro_export] macro_rules! aoc_bench {
+    // "standard" solution with two distinct parts
+    ($name:ident, $solver:ty, $part1_desc:literal, $part2_desc:literal) => {
+        pub fn $name(c: &mut Criterion) {
+            let mut group = c.benchmark_group(<$solver>::solver_label());
+            group.bench_function($part1_desc, |b| {
+                let mut solver = <$solver>::instance();
+                b.iter(|| solver.part_one())
+            });
+            group.bench_function($part2_desc, |b| {
+                let mut solver = <$solver>::instance();
+                b.iter(|| solver.part_two())
+            });
+            group.finish();
+        }
+    };
+    // combined solution
+    ($name:ident, $solver:ty, $combined_desc:literal) => {
+        pub fn $name(c: &mut Criterion) {
+            let mut group = c.benchmark_group(<$solver>::solver_label());
+            group.bench_function($combined_desc, |b| {
+                let mut solver = <$solver>::instance();
+                b.iter(|| {
+                    solver.part_one();
+                    solver.part_two();
+                })
+            });
+            group.finish();
+        }
+    };
+}
+
+/// Defines a set of benchmarks consisting of benches for each specified example
+/// as well as a combined set of benchmarks
+/// Example
+/// ```ignore
+/// use aoc_helpers::aoc_benches;
+///
+/// aoc_benches!{
+///     (
+///         day_001,
+///         something_that_implements_Solution,
+///         "Part 1 description",
+///         "Part 2 description"
+///     )
+///     // ...
+/// }
+/// ```
+#[macro_export] macro_rules! aoc_benches {
+    ($comb_seconds:literal, $(($name:ident, $solver:ty, $($description:literal),+)),+) => {
+        use criterion::{criterion_group, Criterion};
+
+        $(
+            aoc_bench!($name, $solver, $($description),+);
+        )+
+
+        pub fn aoc_combined(c: &mut Criterion) {
+            let mut group = c.benchmark_group("Advent of Code");
+            group.measurement_time(Duration::new($comb_seconds, 0));
+            group.bench_function("Total runtime for all solutions, including parsing", |b| {
+                b.iter(|| {
+                    $(
+                        <$solver>::solve();
+                    )+
+                })
+            });
+            group.finish();
+        }
+
+        criterion_group!(benches, $($name,)+ aoc_combined);
+    };
+    ($(($name:ident, $solver:ty, $($description:literal),+)),+) => {
+        aoc_benches!{
+            10, $( ($name, $solver, $($description),+)),+
+        }
+    };
+}
+
 /// Will attempt to load input from the specified `AOC_INPUT` file, otherwise
 /// will default to loading the corresponding input file for the day given by
 /// `default_day`.
