@@ -130,13 +130,18 @@ where
         format!("{:03}", <Self as Solver>::DAY)
     }
 
+    /// Attempts to load input based on the DAY of this solver. This function
+    /// can panic!
+    fn load_input() -> Vec<String> {
+        let day = <Self as Solver>::solver_day();
+        load_input(&day).expect("could not load input")
+    }
+
     /// Attempts to construct an instance of this solver from using the default
     /// input path determined by `ID`. This function can panic! This is
     /// necessary for selectively solving part one or part two for benchmarks.
     fn instance() -> Self {
-        let day = <Self as Solver>::solver_day();
-        let input = load_input(&day).expect("could not load input");
-        Self::try_from(input).expect("could not parse input")
+        Self::try_from(Self::load_input()).expect("could not parse input")
     }
 
     /// Attempts to load the input and produces the combined part one and two
