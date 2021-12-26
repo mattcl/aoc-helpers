@@ -116,10 +116,12 @@ impl FromStr for Location {
         let row: usize = parts
             .next()
             .ok_or_else(|| AocError::ParseLocationError(format!("missing row: {}", s)))?
+            .trim()
             .parse()?;
         let col: usize = parts
             .next()
             .ok_or_else(|| AocError::ParseLocationError(format!("missing col: {}", s)))?
+            .trim()
             .parse()?;
         Ok(Self::new(row, col))
     }
