@@ -1,6 +1,10 @@
 use serde::Serialize;
 use serde_json;
-use std::{env, fmt::{Display, Debug}, convert::TryFrom};
+use std::{
+    convert::TryFrom,
+    env,
+    fmt::{Debug, Display},
+};
 
 use crate::load_input;
 
@@ -95,7 +99,7 @@ where
 /// benchmarks, etc.).
 pub trait Solver: TryFrom<Vec<String>>
 where
-    <Self as TryFrom<Vec<String>>>::Error: Debug
+    <Self as TryFrom<Vec<String>>>::Error: Debug,
 {
     /// The title of this puzzle. Used for displaying in benchmarks and whatnot
     const ID: &'static str;
@@ -122,7 +126,11 @@ where
 
     /// Returns a complete label for this puzzle in the form `001 my puzzle id`
     fn solver_label() -> String {
-        format!("{} {}", <Self as Solver>::solver_day(), <Self as Solver>::ID)
+        format!(
+            "{} {}",
+            <Self as Solver>::solver_day(),
+            <Self as Solver>::ID
+        )
     }
 
     /// Returns the [String] representaiton of the day, zero-padded to len 3

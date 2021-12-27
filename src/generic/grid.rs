@@ -91,7 +91,7 @@ where
         Grid {
             locations,
             rows,
-            cols
+            cols,
         }
     }
 }
@@ -123,10 +123,7 @@ where
     }
 }
 
-impl<T> Scalable for Grid<T>
-where
-    T: Debug + Clone,
-{ }
+impl<T> Scalable for Grid<T> where T: Debug + Clone {}
 
 impl<T> TryFrom<Vec<Vec<T>>> for Grid<T>
 where

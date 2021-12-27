@@ -6,7 +6,8 @@ use std::str::FromStr;
 
 use crate::error::{AocError, Result};
 
-#[macro_export] macro_rules! aoc_bench {
+#[macro_export]
+macro_rules! aoc_bench {
     // "standard" solution with two distinct parts
     ($name:ident, $solver:ty, $part1_desc:literal, $part2_desc:literal) => {
         pub fn $name(c: &mut Criterion) {
@@ -54,7 +55,8 @@ use crate::error::{AocError, Result};
 ///     // ...
 /// }
 /// ```
-#[macro_export] macro_rules! aoc_benches {
+#[macro_export]
+macro_rules! aoc_benches {
     ($comb_seconds:literal, $(($name:ident, $solver:ty, $($description:literal),+)),+) => {
         use criterion::{criterion_group, Criterion};
         use std::time::Duration;
