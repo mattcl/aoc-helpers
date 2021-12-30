@@ -2,7 +2,7 @@ use std::{collections::BinaryHeap, fmt::Debug};
 
 use num::{Num, Bounded};
 
-use super::{Grid, Location, prelude::GridLike};
+use super::{Grid, Location};
 
 
 #[derive(Debug, Clone, Default, Eq, PartialEq)]
@@ -64,30 +64,29 @@ where
     }
 }
 
+pub trait CostCache<T, G>
+where
+    T: Eq + PartialEq + Debug + Clone,
+    G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
+{
+    fn cache_get(&self, id: &T) -> G;
+    fn cache_set(&mut self, id: &T, val: G);
+}
+
 pub trait Dijkstra<T, G>
 where
     T: Eq + PartialEq + Debug + Clone,
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
 {
-    fn shortest_path_cost<F>(&self, start: T, goal: T, edges_fn: F) -> Option<G>
+    fn shortest_path_cost<Cache, EdgeFn>(&self, start: T, goal: T, cost_cache: &mut Cache, edges_fn: EdgeFn) -> Option<G>
     where
-        F: Fn(&T) -> Vec<DEdge<T, G>>;
-}
-
-impl<G, T> Dijkstra<Location, G> for Grid<T>
-where
-    T: Eq + PartialEq + Debug + Clone,
-    G: Num + Bounded + Ord + PartialOrd + Clone + Copy
-{
-    fn shortest_path_cost<F>(&self, start: Location, goal: Location, edges_fn: F) -> Option<G>
-    where
-        F: Fn(&Location) -> Vec<DEdge<Location, G>>
+        Cache: CostCache<T, G>,
+        EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>
     {
-        let mut costs = vec![G::max_value(); self.size()];
         let mut heap = BinaryHeap::new();
 
         let start = DNode {id: start, cost: G::zero()};
-        costs[start.id.as_rm_index(self.rows())] = G::zero();
+        cost_cache.cache_set(&start.id, G::zero());
         heap.push(start);
 
         while let Some(DNode {id, cost}) = heap.pop() {
@@ -95,22 +94,26 @@ where
                 return Some(cost)
             }
 
-            if cost > costs[id.as_rm_index(self.rows())] {
+            if cost > cost_cache.cache_get(&id) {
                 continue;
             }
 
-            for edge in edges_fn(&id).iter() {
+            for edge in edges_fn(&id) {
                 let next = DNode {id: edge.id, cost: cost + edge.cost};
 
-                let idx = next.id.as_rm_index(self.rows());
-                if next.cost < costs[idx] {
-                    costs[idx] = next.cost;
+                if next.cost < cost_cache.cache_get(&next.id) {
+                    cost_cache.cache_set(&next.id, next.cost);
                     heap.push(next);
                 }
             }
-
         }
 
         None
     }
 }
+
+impl<G, T> Dijkstra<Location, G> for Grid<T>
+where
+    T: Eq + PartialEq + Debug + Clone,
+    G: Num + Bounded + Ord + PartialOrd + Clone + Copy
+{ }
