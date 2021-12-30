@@ -64,56 +64,80 @@ where
     }
 }
 
-pub trait CostCache<T, G>
-where
-    T: Eq + PartialEq + Debug + Clone,
-    G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
-{
-    fn cache_get(&self, id: &T) -> G;
-    fn cache_set(&mut self, id: &T, val: G);
+pub trait CostCache<T> {
+    type Cost: Num + Bounded + Ord + PartialOrd + Clone + Copy;
+
+    fn cache_get(&self, id: &T) -> Self::Cost;
+    fn cache_set(&mut self, id: &T, val: Self::Cost);
 }
 
-pub trait Dijkstra<T, G>
+#[derive(Debug, Clone, Default, Eq, PartialEq)]
+pub struct DefaultLocationCache<G>
 where
-    T: Eq + PartialEq + Debug + Clone,
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
 {
-    fn shortest_path_cost<Cache, EdgeFn>(&self, start: T, goal: T, cost_cache: &mut Cache, edges_fn: EdgeFn) -> Option<G>
-    where
-        Cache: CostCache<T, G>,
-        EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>
-    {
-        let mut heap = BinaryHeap::new();
+    elements: Vec<G>,
+    row_count: usize,
+}
 
-        let start = DNode {id: start, cost: G::zero()};
-        cost_cache.cache_set(&start.id, G::zero());
-        heap.push(start);
-
-        while let Some(DNode {id, cost}) = heap.pop() {
-            if id == goal {
-                return Some(cost)
-            }
-
-            if cost > cost_cache.cache_get(&id) {
-                continue;
-            }
-
-            for edge in edges_fn(&id) {
-                let next = DNode {id: edge.id, cost: cost + edge.cost};
-
-                if next.cost < cost_cache.cache_get(&next.id) {
-                    cost_cache.cache_set(&next.id, next.cost);
-                    heap.push(next);
-                }
-            }
+impl<G> DefaultLocationCache<G>
+where
+    G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
+{
+    pub fn new(size: usize, row_count: usize) -> Self {
+        Self {
+            elements: vec![G::max_value(); size],
+            row_count
         }
-
-        None
     }
 }
 
-impl<G, T> Dijkstra<Location, G> for Grid<T>
+impl<G> CostCache<Location> for DefaultLocationCache<G>
+where
+    G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
+{
+    type Cost = G;
+
+    fn cache_get(&self, id: &Location) -> Self::Cost {
+        self.elements[id.as_rm_index(self.row_count)]
+    }
+
+    fn cache_set(&mut self, id: &Location, val: Self::Cost) {
+        self.elements[id.as_rm_index(self.row_count)] = val;
+    }
+}
+
+pub fn dijkstra_cost<T, G, Cache, EdgeFn>(start: T, goal: T, edges_fn: EdgeFn, cost_cache: &mut Cache) -> Option<G>
 where
     T: Eq + PartialEq + Debug + Clone,
-    G: Num + Bounded + Ord + PartialOrd + Clone + Copy
-{ }
+    G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
+    EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>,
+    Cache: CostCache<T, Cost = G>,
+{
+    let mut heap = BinaryHeap::new();
+
+    let start = DNode {id: start, cost: G::zero()};
+    cost_cache.cache_set(&start.id, G::zero());
+    heap.push(start);
+
+    while let Some(DNode {id, cost}) = heap.pop() {
+        if id == goal {
+            return Some(cost)
+        }
+
+        if cost > cost_cache.cache_get(&id) {
+            continue;
+        }
+
+        for edge in edges_fn(&id) {
+            let next = DNode {id: edge.id, cost: cost + edge.cost};
+
+            if next.cost < cost_cache.cache_get(&next.id) {
+                cost_cache.cache_set(&next.id, next.cost);
+                heap.push(next);
+            }
+        }
+    }
+
+    None
+}
