@@ -2,7 +2,7 @@ use std::{collections::BinaryHeap, fmt::Debug};
 
 use num::{Bounded, Num};
 
-use super::{Grid, Location};
+use super::Location;
 
 #[derive(Debug, Clone, Default, Eq, PartialEq)]
 pub struct DNode<T, G>
@@ -15,21 +15,21 @@ where
 
 impl<T, G> Ord for DNode<T, G>
 where
-    T: Eq + PartialEq,
+    T: Ord + PartialOrd + Eq + PartialEq,
     G: Num + Ord + PartialOrd,
 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.cost.cmp(&self.cost)
+        other.cost.cmp(&self.cost).then_with(|| other.id.cmp(&self.id))
     }
 }
 
 impl<T, G> PartialOrd for DNode<T, G>
 where
-    T: Eq + PartialEq,
+    T: Ord + PartialOrd + Eq + PartialEq,
     G: Num + Ord + PartialOrd,
 {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(other.cost.cmp(&self.cost))
+        Some(self.cmp(other))
     }
 }
 
@@ -45,21 +45,21 @@ where
 
 impl<T, G> Ord for DPNode<T, G>
 where
-    T: Eq + PartialEq,
+    T: Ord + PartialOrd + Eq + PartialEq,
     G: Num + Ord + PartialOrd,
 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.cost.cmp(&self.cost)
+        other.cost.cmp(&self.cost).then_with(|| other.id.cmp(&self.id))
     }
 }
 
 impl<T, G> PartialOrd for DPNode<T, G>
 where
-    T: Eq + PartialEq,
+    T: Ord + PartialOrd + Eq + PartialEq,
     G: Num + Ord + PartialOrd,
 {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(other.cost.cmp(&self.cost))
+        Some(self.cmp(other))
     }
 }
 
@@ -143,7 +143,7 @@ pub fn dijkstra_cost<T, G, Cache, EdgeFn>(
     edges_fn: EdgeFn,
 ) -> Option<G>
 where
-    T: Eq + PartialEq + Debug + Clone,
+    T: Ord + PartialOrd + Eq + PartialEq + Debug + Clone,
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
     Cache: CostCache<T, Cost = G>,
     EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>,
@@ -189,7 +189,7 @@ pub fn dijkstra_path<T, G, Cache, EdgeFn>(
     edges_fn: EdgeFn,
 ) -> Option<Vec<T>>
 where
-    T: Eq + PartialEq + Debug + Clone,
+    T: Ord + PartialOrd + Eq + PartialEq + Debug + Clone,
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
     Cache: CostCache<T, Cost = G>,
     EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>,
@@ -235,4 +235,33 @@ where
     }
 
     None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn node_ordering() {
+        let mut nodes = vec![
+            DNode {id: Location::new(0, 0), cost: 5_usize},
+            DNode {id: Location::new(0, 2), cost: 4_usize},
+            DNode {id: Location::new(0, 0), cost: 4_usize},
+            DNode {id: Location::new(0, 1), cost: 4_usize},
+            DNode {id: Location::new(1, 1), cost: 4_usize},
+            DNode {id: Location::new(1, 1), cost: 7_usize},
+        ];
+
+        let expected = vec![
+            DNode {id: Location::new(1, 1), cost: 7_usize},
+            DNode {id: Location::new(0, 0), cost: 5_usize},
+            DNode {id: Location::new(1, 1), cost: 4_usize},
+            DNode {id: Location::new(0, 2), cost: 4_usize},
+            DNode {id: Location::new(0, 1), cost: 4_usize},
+            DNode {id: Location::new(0, 0), cost: 4_usize},
+        ];
+        nodes.sort();
+
+        assert_eq!(nodes, expected);
+    }
 }
