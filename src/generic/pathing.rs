@@ -1,14 +1,13 @@
 use std::{collections::BinaryHeap, fmt::Debug};
 
-use num::{Num, Bounded};
+use num::{Bounded, Num};
 
 use super::{Grid, Location};
-
 
 #[derive(Debug, Clone, Default, Eq, PartialEq)]
 pub struct DNode<T, G>
 where
-    G: Num
+    G: Num,
 {
     id: T,
     cost: G,
@@ -17,7 +16,7 @@ where
 impl<T, G> Ord for DNode<T, G>
 where
     T: Eq + PartialEq,
-    G: Num + Ord + PartialOrd
+    G: Num + Ord + PartialOrd,
 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         other.cost.cmp(&self.cost)
@@ -27,7 +26,7 @@ where
 impl<T, G> PartialOrd for DNode<T, G>
 where
     T: Eq + PartialEq,
-    G: Num + Ord + PartialOrd
+    G: Num + Ord + PartialOrd,
 {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(other.cost.cmp(&self.cost))
@@ -38,7 +37,7 @@ where
 pub struct DEdge<T, G>
 where
     T: Eq + PartialEq,
-    G: Num + Ord + PartialOrd
+    G: Num + Ord + PartialOrd,
 {
     id: T,
     cost: G,
@@ -47,17 +46,17 @@ where
 impl<T, G> DEdge<T, G>
 where
     T: Eq + PartialEq,
-    G: Num + Ord + PartialOrd
+    G: Num + Ord + PartialOrd,
 {
     pub fn new(id: T, cost: G) -> Self {
-        Self {id, cost}
+        Self { id, cost }
     }
 }
 
 impl<T, G> From<(T, G)> for DEdge<T, G>
 where
     T: Eq + PartialEq,
-    G: Num + Ord + PartialOrd
+    G: Num + Ord + PartialOrd,
 {
     fn from(v: (T, G)) -> Self {
         Self::new(v.0, v.1)
@@ -87,7 +86,7 @@ where
     pub fn new(size: usize, row_count: usize) -> Self {
         Self {
             elements: vec![G::max_value(); size],
-            row_count
+            row_count,
         }
     }
 }
@@ -107,22 +106,30 @@ where
     }
 }
 
-pub fn dijkstra_cost<T, G, Cache, EdgeFn>(start: T, goal: T, edges_fn: EdgeFn, cost_cache: &mut Cache) -> Option<G>
+pub fn dijkstra_cost<T, G, Cache, EdgeFn>(
+    start: T,
+    goal: T,
+    cost_cache: &mut Cache,
+    edges_fn: EdgeFn,
+) -> Option<G>
 where
     T: Eq + PartialEq + Debug + Clone,
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
-    EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>,
     Cache: CostCache<T, Cost = G>,
+    EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>,
 {
     let mut heap = BinaryHeap::new();
 
-    let start = DNode {id: start, cost: G::zero()};
+    let start = DNode {
+        id: start,
+        cost: G::zero(),
+    };
     cost_cache.cache_set(&start.id, G::zero());
     heap.push(start);
 
-    while let Some(DNode {id, cost}) = heap.pop() {
+    while let Some(DNode { id, cost }) = heap.pop() {
         if id == goal {
-            return Some(cost)
+            return Some(cost);
         }
 
         if cost > cost_cache.cache_get(&id) {
@@ -130,7 +137,10 @@ where
         }
 
         for edge in edges_fn(&id) {
-            let next = DNode {id: edge.id, cost: cost + edge.cost};
+            let next = DNode {
+                id: edge.id,
+                cost: cost + edge.cost,
+            };
 
             if next.cost < cost_cache.cache_get(&next.id) {
                 cost_cache.cache_set(&next.id, next.cost);
