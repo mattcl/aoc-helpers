@@ -116,7 +116,7 @@ where
     T: Eq + PartialEq + Debug + Clone,
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
     Cache: CostCache<T, Cost = G>,
-    EdgeFn: Fn(&T) -> Box<dyn Iterator<Item = DEdge<T, G>>>,
+    EdgeFn: Fn(&T) -> Vec<DEdge<T, G>>,
 {
     let mut heap = BinaryHeap::new();
 
