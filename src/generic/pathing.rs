@@ -293,7 +293,7 @@ where
                 path: new_path,
             };
 
-            if next.cost <= cost_cache.cache_get(&next.id) {
+            if next.cost < cost_cache.cache_get(&next.id) || next.id == goal {
                 cost_cache.cache_set(&next.id, next.cost);
                 heap.push(next);
             }
