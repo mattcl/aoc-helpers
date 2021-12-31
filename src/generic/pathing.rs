@@ -9,8 +9,8 @@ pub struct DNode<T, G>
 where
     G: Num,
 {
-    id: T,
-    cost: G,
+    pub id: T,
+    pub cost: G,
 }
 
 impl<T, G> Ord for DNode<T, G>
@@ -38,9 +38,9 @@ pub struct DPNode<T, G>
 where
     G: Num,
 {
-    id: T,
-    cost: G,
-    path: Vec<T>
+    pub id: T,
+    pub cost: G,
+    pub path: Vec<T>
 }
 
 impl<T, G> Ord for DPNode<T, G>
@@ -69,8 +69,8 @@ where
     T: Eq + PartialEq,
     G: Num + Ord + PartialOrd,
 {
-    id: T,
-    cost: G,
+    pub id: T,
+    pub cost: G,
 }
 
 impl<T, G> DEdge<T, G>
@@ -293,7 +293,7 @@ where
                 path: new_path,
             };
 
-            if next.cost < cost_cache.cache_get(&next.id) || next.id == goal {
+            if next.cost < cost_cache.cache_get(&next.id) {
                 cost_cache.cache_set(&next.id, next.cost);
                 heap.push(next);
             }
