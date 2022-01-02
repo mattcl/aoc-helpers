@@ -1,12 +1,14 @@
 use std::fmt::{self, Display};
 use std::hash::Hash;
 
-use num::Num;
+use num::{Num, Bounded, Unsigned, Integer};
+
+use super::Location;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash)]
 pub struct Bound2D<T>
 where
-    T: Num + PartialOrd + Copy + Default + Hash,
+    T: Num + Bounded + PartialOrd + Copy + Default + Hash,
 {
     pub min_x: T,
     pub max_x: T,
@@ -16,7 +18,7 @@ where
 
 impl<T> Bound2D<T>
 where
-    T: Num + PartialOrd + Copy + Default + Hash,
+    T: Num + Bounded + PartialOrd + Copy + Default + Hash,
 {
     pub fn new(min_x: T, max_x: T, min_y: T, max_y: T) -> Self {
         Self {
@@ -25,6 +27,24 @@ where
             min_y,
             max_y,
         }
+    }
+
+    /// Useful for having an initial state that can be used for generating a
+    /// bound via iteration. `x_min` and `y_min` will be set to
+    /// `T::max_value()`, and `x_man` and `y_max` will be set to
+    /// `T::min_value()`.
+    ///
+    /// Example
+    /// ```
+    /// use aoc_helpers::generic::Bound2D;
+    ///
+    /// let b: Bound2D<i32> = Bound2D::minmax();
+    /// let expected = Bound2D::new(i32::MAX, i32::MIN, i32::MAX, i32::MIN);
+    ///
+    /// assert_eq!(b, expected);
+    /// ```
+    pub fn minmax() -> Self {
+        Self::new(T::max_value(), T::min_value(), T::max_value(), T::min_value())
     }
 
     pub fn contains(&self, x: T, y: T) -> bool {
@@ -44,9 +64,19 @@ where
     }
 }
 
+// Special case for usize
+impl Bound2D<usize>
+{
+    /// Translate a given location by subtracting `min_y` from `loc.row` and
+    /// `min_x` from `loc.col`. This is a special-case of Bound2D<usize>
+    pub fn translate(&self, loc: &Location) -> Location {
+        (loc.row - self.min_y, loc.col - self.min_x).into()
+    }
+}
+
 impl<T> fmt::Display for Bound2D<T>
 where
-    T: Num + PartialOrd + Copy + Default + Hash + Display,
+    T: Num + Bounded + PartialOrd + Copy + Default + Hash + Display,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
@@ -60,6 +90,14 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn minmax() {
+        let b = Bound2D::minmax();
+        let expected = Bound2D::new(i32::MAX, i32::MIN, i32::MAX, i32::MIN);
+
+        assert_eq!(b, expected);
+    }
 
     #[test]
     fn contains() {
