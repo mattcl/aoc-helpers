@@ -1,5 +1,7 @@
+use itertools::Itertools;
+
 use crate::error::{AocError, Result};
-use std::{convert::TryFrom, fmt::Debug};
+use std::{convert::TryFrom, fmt::{self, Debug, Display}};
 
 use super::Location;
 
@@ -146,6 +148,19 @@ where
             rows,
             cols,
         })
+    }
+}
+
+impl<T> fmt::Display for Grid<T>
+where
+    T: Display
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let out = self.locations
+            .iter()
+            .map(|row| row.iter().map(|item| item.to_string()).collect::<String>())
+            .join("\n");
+        write!(f, "{}", out)
     }
 }
 
