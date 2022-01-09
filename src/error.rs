@@ -12,6 +12,9 @@ pub enum AocError {
     /// Used to indicate a specified input did not exist
     InputMissing(String),
 
+    /// Used to indicate a `Direction` could not be parsed
+    ParseDirectionError(String),
+
     /// Used to indicate a `Location` could not be parsed
     ParseLocationError(String),
 
@@ -34,6 +37,7 @@ impl std::error::Error for AocError {
         match *self {
             AocError::GridConstructionError(_) => None,
             AocError::InputMissing(_) => None,
+            AocError::ParseDirectionError(_) => None,
             AocError::ParseLocationError(_) => None,
 
             // Generic
@@ -49,12 +53,13 @@ impl std::fmt::Display for AocError {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             AocError::GridConstructionError(ref msg) => {
-                write!(f, "Unable to construct Grid: {}", msg)
+                write!(f, "unable to construct Grid: {}", msg)
             }
             AocError::InputMissing(ref input) => {
-                write!(f, "Specified input was missing: {}", input)
+                write!(f, "specified input was missing: {}", input)
             }
-            AocError::ParseLocationError(ref msg) => write!(f, "Failed to parse Location: {}", msg),
+            AocError::ParseDirectionError(ref msg) => write!(f, "failed to parse Direction: {}", msg),
+            AocError::ParseLocationError(ref msg) => write!(f, "failed to parse Location: {}", msg),
 
             // Generic
             AocError::IOError(ref err) => err.fmt(f),

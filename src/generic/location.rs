@@ -1,7 +1,9 @@
 use itertools::Itertools;
-use std::str::FromStr;
+use std::{str::FromStr, marker::PhantomData};
 
 use crate::error::{AocError, Result};
+
+use super::directions::{HorizHex, VertHex};
 
 /// A `Location` specifies a pair of [usize], [usize] representing a `row` and
 /// `column` respectively. Primarily this is used to interact with [GridLike](super::grid::GridLike)
@@ -136,6 +138,100 @@ impl FromStr for Location {
             .trim()
             .parse()?;
         Ok(Self::new(row, col))
+    }
+}
+
+/// A hexagonal location where North and South are flat faces
+///
+/// See diagram:
+/// ```text
+///        n
+///      +---+
+/// nw  /     \  ne
+///    +       +
+/// se  \     /  se
+///      +---+
+///        s
+/// ```
+pub type HorizHexLoc = HexLocation<HorizHex>;
+
+/// A hexagonal location where West and East are flat faces
+///
+/// See diagram:
+/// ```text
+///       +
+///      / \
+/// nw  /   \  ne
+///    /     \
+///   +       +
+///   |       |
+/// w |       | e
+///   |       |
+///   +       +
+///    \     /
+/// se  \   /  se
+///      \ /
+///       +
+/// ```
+pub type VertHexLoc = HexLocation<VertHex>;
+
+#[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash)]
+pub struct HexLocation<T> {
+    pub q: i64,
+    pub r: i64,
+    _orientation: PhantomData<T>,
+}
+
+impl<T> From<(i64, i64)> for HexLocation<T> {
+    fn from(v: (i64, i64)) -> Self {
+        Self { q: v.0, r: v.1, _orientation: PhantomData}
+    }
+}
+
+impl<T> HexLocation<T> {
+    pub fn q(&self) -> i64 {
+        self.q
+    }
+
+    pub fn r(&self) -> i64 {
+        self.r
+    }
+
+    pub fn s(&self) -> i64 {
+        -self.q - self.r
+    }
+
+    pub fn distance(&self, other: &Self) -> i64 {
+        ((self.q - other.q).abs()
+            + (self.q + self.r - other.q - other.r).abs()
+            + (self.r - other.r).abs())
+            / 2
+    }
+}
+
+impl HexLocation<HorizHex> {
+    pub fn get_neighbor(&self, dir: &HorizHex) -> Self {
+        match dir {
+            HorizHex::North => (self.q, self.r - 1).into(),
+            HorizHex::NorthEast => (self.q + 1, self.r - 1).into(),
+            HorizHex::NorthWest => (self.q - 1, self.r).into(),
+            HorizHex::South => (self.q, self.r + 1).into(),
+            HorizHex::SouthEast => (self.q + 1, self.r).into(),
+            HorizHex::SouthWest => (self.q - 1, self.r + 1).into(),
+        }
+    }
+}
+
+impl HexLocation<VertHex> {
+    pub fn get_neighbor(&self, dir: &VertHex) -> Self {
+        match dir {
+            VertHex::East => (self.q + 1, self.r).into(),
+            VertHex::NorthEast => (self.q + 1, self.r - 1).into(),
+            VertHex::SouthEast => (self.q, self.r + 1).into(),
+            VertHex::West => (self.q - 1, self.r).into(),
+            VertHex::NorthWest => (self.q, self.r - 1).into(),
+            VertHex::SouthWest => (self.q - 1, self.r + 1).into(),
+        }
     }
 }
 
