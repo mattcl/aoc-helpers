@@ -1,3 +1,4 @@
+//! Grids are collections of elements indexed by [Location]
 use itertools::Itertools;
 
 use crate::error::{AocError, Result};
@@ -5,21 +6,38 @@ use std::{convert::TryFrom, fmt::{self, Debug, Display}};
 
 use super::Location;
 
-/// The `GridLike` trait denotes that the implementor can be indexed via
-/// [Location] like it was a grid of `rows * cols`.
+/// Structs implementing `GridLike` support accesses by [Location]
 pub trait GridLike {
+    /// The type of elements stored by this grid-like thing
     type Item;
 
-    fn rows(&self) -> usize;
-    fn cols(&self) -> usize;
-    fn get(&self, location: &Location) -> Option<&Self::Item>;
-    fn get_mut(&mut self, location: &Location) -> Option<&mut Self::Item>;
+    /// The type of the locations this grid-like thing is indexed by
+    type Location: Default;
+
+    fn get(&self, location: &Self::Location) -> Option<&Self::Item>;
+    fn get_mut(&mut self, location: &Self::Location) -> Option<&mut Self::Item>;
 
     /// Sets the value for the given [Location], if possible. Returns `true` if
     /// the set happened.
-    fn set(&mut self, location: &Location, value: Self::Item) -> bool {
+    fn set(&mut self, location: &Self::Location, value: Self::Item) -> bool {
         self.get_mut(location).map(|v| *v = value).is_some()
     }
+
+    /// Return the total number of cells contained in this grid-like thing.
+    fn size(&self) -> usize;
+
+    /// Whether or not the grid-like thing is empty
+    fn is_empty(&self) -> bool {
+        self.size() == 0
+    }
+}
+
+/// Rectangular grids have rows, columns and a top left and bottom right corner.
+///
+/// Rectangular grids are required to have a Location type of [Location]
+pub trait Rectangular: GridLike<Location = Location> {
+    fn rows(&self) -> usize;
+    fn cols(&self) -> usize;
 
     /// Return a [Location] corresponding to the top left corner of this grid
     /// (the "first" element in the grid). This will always be
@@ -30,23 +48,17 @@ pub trait GridLike {
 
     /// Return a [Location] corresponding to the bottom right corner of this grid
     /// (the "last" element in the grid).
+    ///
+    /// # Panics
+    /// if the grid is empty
     fn bottom_right(&self) -> Location {
         Location::new(self.rows() - 1, self.cols() - 1)
-    }
-
-    /// Return the total number of cells contained in this grid-like thing.
-    fn size(&self) -> usize {
-        self.rows() * self.cols()
-    }
-
-    fn is_empty(&self) -> bool {
-        self.size() == 0
     }
 }
 
 /// The `Scalable` trait allows for a GridLike object to be scaled (tiled) in
 /// both width and height. It was useful for problem 15 of the 2021 AoC.
-pub trait Scalable: GridLike {
+pub trait Scalable: Rectangular {
     fn scaled_bottom_right(&self, scale: usize) -> Location {
         Location::new(self.rows() * scale - 1, self.cols() * scale - 1)
     }
@@ -103,7 +115,30 @@ where
     T: Debug + Clone,
 {
     type Item = T;
+    type Location = Location;
 
+    fn get(&self, location: &Self::Location) -> Option<&Self::Item> {
+        self.locations
+            .get(location.row)
+            .and_then(|r| r.get(location.col))
+    }
+
+    fn get_mut(&mut self, location: &Self::Location) -> Option<&mut Self::Item> {
+        self.locations
+            .get_mut(location.row)
+            .and_then(|r| r.get_mut(location.col))
+    }
+
+    fn size(&self) -> usize {
+        self.rows * self.cols
+    }
+}
+
+
+impl<T> Rectangular for Grid<T>
+where
+    T: Debug + Clone,
+{
     fn rows(&self) -> usize {
         self.rows
     }
@@ -111,19 +146,8 @@ where
     fn cols(&self) -> usize {
         self.cols
     }
-
-    fn get(&self, location: &Location) -> Option<&Self::Item> {
-        self.locations
-            .get(location.row)
-            .and_then(|r| r.get(location.col))
-    }
-
-    fn get_mut(&mut self, location: &Location) -> Option<&mut Self::Item> {
-        self.locations
-            .get_mut(location.row)
-            .and_then(|r| r.get_mut(location.col))
-    }
 }
+
 
 impl<T> Scalable for Grid<T> where T: Debug + Clone {}
 
