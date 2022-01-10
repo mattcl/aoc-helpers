@@ -3,7 +3,7 @@ use std::{marker::PhantomData, str::FromStr};
 
 use crate::error::{AocError, Result};
 
-use super::directions::{HorizHex, VertHex};
+use super::directions::{HorizHexDir, VertHexDir};
 
 /// A `Location` specifies a pair of [usize], [usize] representing a `row` and
 /// `column` respectively. Primarily this is used to interact with [GridLike](super::grid::GridLike)
@@ -149,7 +149,7 @@ impl FromStr for Location {
 ///
 /// In this case, the generic parameter `T` is a marker for determining which
 /// implementation to use for functions that operate on neighbors of the
-/// location. *The only valid markers are [HorizHex] and [VertHex].* The
+/// location. *The only valid markers are [HorizHexDir] and [VertHexDir].* The
 /// [HorizHexLoc] and [VertHexLoc] type aliases are provided for convenience.
 ///
 /// # Examples
@@ -167,15 +167,15 @@ impl FromStr for Location {
 /// not always result in the same modifications to internal representation.
 /// ```
 /// use aoc_helpers::generic::{HorizHexLoc, VertHexLoc};
-/// use aoc_helpers::generic::directions::{HorizHex, VertHex};
+/// use aoc_helpers::generic::directions::{HorizHexDir, VertHexDir};
 ///
 /// let h_hex = HorizHexLoc::default();
 /// let v_hex = VertHexLoc::default();
 ///
 /// // Note how the South East neighbor has a different internal representation
 /// // between the horizontal and vertical implementations
-/// assert_eq!(h_hex.get_neighbor(&HorizHex::SouthEast), HorizHexLoc::from((1, 0)));
-/// assert_eq!(v_hex.get_neighbor(&VertHex::SouthEast), VertHexLoc::from((0, 1)));
+/// assert_eq!(h_hex.get_neighbor(&HorizHexDir::SouthEast), HorizHexLoc::from((1, 0)));
+/// assert_eq!(v_hex.get_neighbor(&VertHexDir::SouthEast), VertHexLoc::from((0, 1)));
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub struct HexLocation<T> {
@@ -270,29 +270,29 @@ impl<T> HexLocation<T> {
 /// ```
 ///
 /// Orientation-dependent methods like [`get_neighbor`](HorizHexLoc::get_neighbor) have slightly
-/// different implementations between this and [VertHex].
-pub type HorizHexLoc = HexLocation<HorizHex>;
+/// different implementations between this and [VertHexLoc].
+pub type HorizHexLoc = HexLocation<HorizHexDir>;
 
-impl HexLocation<HorizHex> {
-    /// Given a reference to a [HorizHex], return the neighbor in that direction.
+impl HexLocation<HorizHexDir> {
+    /// Given a reference to a [HorizHexDir], return the neighbor in that direction.
     ///
     /// # Examples
     /// ```
     /// use aoc_helpers::generic::HorizHexLoc;
-    /// use aoc_helpers::generic::directions::HorizHex;
+    /// use aoc_helpers::generic::directions::HorizHexDir;
     ///
     /// let loc = HorizHexLoc::from((1, 1));
-    /// assert_eq!(loc.get_neighbor(&HorizHex::NorthEast), HorizHexLoc::from((2, 0)));
-    /// assert_eq!(loc.get_neighbor(&HorizHex::SouthEast), HorizHexLoc::from((2, 1)));
+    /// assert_eq!(loc.get_neighbor(&HorizHexDir::NorthEast), HorizHexLoc::from((2, 0)));
+    /// assert_eq!(loc.get_neighbor(&HorizHexDir::SouthEast), HorizHexLoc::from((2, 1)));
     /// ```
-    pub fn get_neighbor(&self, dir: &HorizHex) -> Self {
+    pub fn get_neighbor(&self, dir: &HorizHexDir) -> Self {
         match dir {
-            HorizHex::North => (self.q, self.r - 1).into(),
-            HorizHex::NorthEast => (self.q + 1, self.r - 1).into(),
-            HorizHex::NorthWest => (self.q - 1, self.r).into(),
-            HorizHex::South => (self.q, self.r + 1).into(),
-            HorizHex::SouthEast => (self.q + 1, self.r).into(),
-            HorizHex::SouthWest => (self.q - 1, self.r + 1).into(),
+            HorizHexDir::North => (self.q, self.r - 1).into(),
+            HorizHexDir::NorthEast => (self.q + 1, self.r - 1).into(),
+            HorizHexDir::NorthWest => (self.q - 1, self.r).into(),
+            HorizHexDir::South => (self.q, self.r + 1).into(),
+            HorizHexDir::SouthEast => (self.q + 1, self.r).into(),
+            HorizHexDir::SouthWest => (self.q - 1, self.r + 1).into(),
         }
     }
 }
@@ -316,29 +316,29 @@ impl HexLocation<HorizHex> {
 ///       +
 /// ```
 /// Orientation-dependent methods like [`get_neighbor`](VertHexLoc::get_neighbor) have slightly
-/// different implementations between this and [HorizHex].
-pub type VertHexLoc = HexLocation<VertHex>;
+/// different implementations between this and [HorizHexLoc].
+pub type VertHexLoc = HexLocation<VertHexDir>;
 
-impl HexLocation<VertHex> {
-    /// Given a reference to a [VertHex], return the neighbor in that direction.
+impl HexLocation<VertHexDir> {
+    /// Given a reference to a [VertHexDir], return the neighbor in that direction.
     ///
     /// # Examples
     /// ```
     /// use aoc_helpers::generic::VertHexLoc;
-    /// use aoc_helpers::generic::directions::VertHex;
+    /// use aoc_helpers::generic::directions::VertHexDir;
     ///
     /// let loc = VertHexLoc::from((1, 1));
-    /// assert_eq!(loc.get_neighbor(&VertHex::NorthEast), VertHexLoc::from((2, 0)));
-    /// assert_eq!(loc.get_neighbor(&VertHex::SouthEast), VertHexLoc::from((1, 2)));
+    /// assert_eq!(loc.get_neighbor(&VertHexDir::NorthEast), VertHexLoc::from((2, 0)));
+    /// assert_eq!(loc.get_neighbor(&VertHexDir::SouthEast), VertHexLoc::from((1, 2)));
     /// ```
-    pub fn get_neighbor(&self, dir: &VertHex) -> Self {
+    pub fn get_neighbor(&self, dir: &VertHexDir) -> Self {
         match dir {
-            VertHex::East => (self.q + 1, self.r).into(),
-            VertHex::NorthEast => (self.q + 1, self.r - 1).into(),
-            VertHex::SouthEast => (self.q, self.r + 1).into(),
-            VertHex::West => (self.q - 1, self.r).into(),
-            VertHex::NorthWest => (self.q, self.r - 1).into(),
-            VertHex::SouthWest => (self.q - 1, self.r + 1).into(),
+            VertHexDir::East => (self.q + 1, self.r).into(),
+            VertHexDir::NorthEast => (self.q + 1, self.r - 1).into(),
+            VertHexDir::SouthEast => (self.q, self.r + 1).into(),
+            VertHexDir::West => (self.q - 1, self.r).into(),
+            VertHexDir::NorthWest => (self.q, self.r - 1).into(),
+            VertHexDir::SouthWest => (self.q - 1, self.r + 1).into(),
         }
     }
 }

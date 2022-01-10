@@ -1,7 +1,7 @@
 use std::fmt::{self, Display};
 use std::hash::Hash;
 
-use num::{Bounded, Integer, Num, Unsigned};
+use num::{Bounded, Num};
 
 use super::Location;
 

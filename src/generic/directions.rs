@@ -85,40 +85,40 @@ impl From<&Cardinal> for Direction {
     }
 }
 
-impl From<HorizHex> for Direction {
-    fn from(value: HorizHex) -> Self {
+impl From<HorizHexDir> for Direction {
+    fn from(value: HorizHexDir) -> Self {
         Self::from(&value)
     }
 }
 
-impl From<&HorizHex> for Direction {
-    fn from(value: &HorizHex) -> Self {
+impl From<&HorizHexDir> for Direction {
+    fn from(value: &HorizHexDir) -> Self {
         match value {
-            HorizHex::North => Self::North,
-            HorizHex::NorthEast => Self::NorthEast,
-            HorizHex::NorthWest => Self::NorthWest,
-            HorizHex::South => Self::South,
-            HorizHex::SouthEast => Self::SouthEast,
-            HorizHex::SouthWest => Self::SouthWest,
+            HorizHexDir::North => Self::North,
+            HorizHexDir::NorthEast => Self::NorthEast,
+            HorizHexDir::NorthWest => Self::NorthWest,
+            HorizHexDir::South => Self::South,
+            HorizHexDir::SouthEast => Self::SouthEast,
+            HorizHexDir::SouthWest => Self::SouthWest,
         }
     }
 }
 
-impl From<VertHex> for Direction {
-    fn from(value: VertHex) -> Self {
+impl From<VertHexDir> for Direction {
+    fn from(value: VertHexDir) -> Self {
         Self::from(&value)
     }
 }
 
-impl From<&VertHex> for Direction {
-    fn from(value: &VertHex) -> Self {
+impl From<&VertHexDir> for Direction {
+    fn from(value: &VertHexDir) -> Self {
         match value {
-            VertHex::East => Self::East,
-            VertHex::NorthEast => Self::NorthEast,
-            VertHex::SouthEast => Self::SouthEast,
-            VertHex::West => Self::West,
-            VertHex::NorthWest => Self::NorthWest,
-            VertHex::SouthWest => Self::SouthWest,
+            VertHexDir::East => Self::East,
+            VertHexDir::NorthEast => Self::NorthEast,
+            VertHexDir::SouthEast => Self::SouthEast,
+            VertHexDir::West => Self::West,
+            VertHexDir::NorthWest => Self::NorthWest,
+            VertHexDir::SouthWest => Self::SouthWest,
         }
     }
 }
@@ -209,7 +209,7 @@ impl TryFrom<char> for Cardinal {
     }
 }
 
-/// HorizHex is an enum of compass directions that represent valid faces of a
+/// HorizHexDir is an enum of compass directions that represent valid faces of a
 /// hexagon with flat edges north and south.
 ///
 /// See the following diagram:
@@ -227,20 +227,20 @@ impl TryFrom<char> for Cardinal {
 /// Example:
 /// ```
 /// use std::str::FromStr;
-/// use aoc_helpers::generic::directions::HorizHex;
+/// use aoc_helpers::generic::directions::HorizHexDir;
 ///
 /// for v in ["North", "north", "N", "n"] {
-///     assert_eq!(HorizHex::from_str(v).unwrap(), HorizHex::North);
+///     assert_eq!(HorizHexDir::from_str(v).unwrap(), HorizHexDir::North);
 /// }
 ///
 /// for v in ["NorthEast", "northeast", "NE", "ne"] {
-///     assert_eq!(HorizHex::from_str(v).unwrap(), HorizHex::NorthEast);
+///     assert_eq!(HorizHexDir::from_str(v).unwrap(), HorizHexDir::NorthEast);
 /// }
 ///
 /// // etc..
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
-pub enum HorizHex {
+pub enum HorizHexDir {
     North,
     NorthEast,
     NorthWest,
@@ -249,7 +249,7 @@ pub enum HorizHex {
     SouthWest,
 }
 
-impl FromStr for HorizHex {
+impl FromStr for HorizHexDir {
     type Err = AocError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -265,13 +265,13 @@ impl FromStr for HorizHex {
     }
 }
 
-impl fmt::Display for HorizHex {
+impl fmt::Display for HorizHexDir {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         Direction::from(self).fmt(f)
     }
 }
 
-/// VertHex is an enum of compass directions that represent valid faces of a
+/// VertHexDir is an enum of compass directions that represent valid faces of a
 /// hexagon with flat edges west and east.
 ///
 /// See the following diagram:
@@ -295,20 +295,20 @@ impl fmt::Display for HorizHex {
 /// Example:
 /// ```
 /// use std::str::FromStr;
-/// use aoc_helpers::generic::directions::VertHex;
+/// use aoc_helpers::generic::directions::VertHexDir;
 ///
 /// for v in ["East", "east", "E", "e"] {
-///     assert_eq!(VertHex::from_str(v).unwrap(), VertHex::East);
+///     assert_eq!(VertHexDir::from_str(v).unwrap(), VertHexDir::East);
 /// }
 ///
 /// for v in ["NorthEast", "northeast", "NE", "ne"] {
-///     assert_eq!(VertHex::from_str(v).unwrap(), VertHex::NorthEast);
+///     assert_eq!(VertHexDir::from_str(v).unwrap(), VertHexDir::NorthEast);
 /// }
 ///
 /// // etc..
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
-pub enum VertHex {
+pub enum VertHexDir {
     East,
     NorthEast,
     SouthEast,
@@ -317,7 +317,7 @@ pub enum VertHex {
     SouthWest,
 }
 
-impl FromStr for VertHex {
+impl FromStr for VertHexDir {
     type Err = AocError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
@@ -333,7 +333,7 @@ impl FromStr for VertHex {
     }
 }
 
-impl fmt::Display for VertHex {
+impl fmt::Display for VertHexDir {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         Direction::from(self).fmt(f)
     }
