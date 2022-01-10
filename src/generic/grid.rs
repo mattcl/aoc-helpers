@@ -2,7 +2,10 @@
 use itertools::Itertools;
 
 use crate::error::{AocError, Result};
-use std::{convert::TryFrom, fmt::{self, Debug, Display}};
+use std::{
+    convert::TryFrom,
+    fmt::{self, Debug, Display},
+};
 
 use super::Location;
 
@@ -134,7 +137,6 @@ where
     }
 }
 
-
 impl<T> Rectangular for Grid<T>
 where
     T: Debug + Clone,
@@ -147,7 +149,6 @@ where
         self.cols
     }
 }
-
 
 impl<T> Scalable for Grid<T> where T: Debug + Clone {}
 
@@ -177,10 +178,11 @@ where
 
 impl<T> fmt::Display for Grid<T>
 where
-    T: Display
+    T: Display,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let out = self.locations
+        let out = self
+            .locations
             .iter()
             .map(|row| row.iter().map(|item| item.to_string()).collect::<String>())
             .join("\n");

@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use std::{str::FromStr, marker::PhantomData};
+use std::{marker::PhantomData, str::FromStr};
 
 use crate::error::{AocError, Result};
 
@@ -17,7 +17,9 @@ pub struct Location {
 
 impl Ord for Location {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.row.cmp(&other.row).then_with(|| self.col.cmp(&other.col))
+        self.row
+            .cmp(&other.row)
+            .then_with(|| self.col.cmp(&other.col))
     }
 }
 
@@ -190,7 +192,11 @@ impl<T> Default for HexLocation<T> {
 
 impl<T> From<(i64, i64)> for HexLocation<T> {
     fn from(v: (i64, i64)) -> Self {
-        Self { q: v.0, r: v.1, _orientation: PhantomData}
+        Self {
+            q: v.0,
+            r: v.1,
+            _orientation: PhantomData,
+        }
     }
 }
 

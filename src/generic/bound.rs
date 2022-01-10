@@ -1,7 +1,7 @@
 use std::fmt::{self, Display};
 use std::hash::Hash;
 
-use num::{Num, Bounded, Unsigned, Integer};
+use num::{Bounded, Integer, Num, Unsigned};
 
 use super::Location;
 
@@ -44,7 +44,12 @@ where
     /// assert_eq!(b, expected);
     /// ```
     pub fn minmax() -> Self {
-        Self::new(T::max_value(), T::min_value(), T::max_value(), T::min_value())
+        Self::new(
+            T::max_value(),
+            T::min_value(),
+            T::max_value(),
+            T::min_value(),
+        )
     }
 
     pub fn contains(&self, x: T, y: T) -> bool {
@@ -65,8 +70,7 @@ where
 }
 
 // Special case for usize
-impl Bound2D<usize>
-{
+impl Bound2D<usize> {
     /// Translate a given location by subtracting `min_y` from `loc.row` and
     /// `min_x` from `loc.col`. This is a special-case of Bound2D<usize>
     pub fn translate(&self, loc: &Location) -> Location {

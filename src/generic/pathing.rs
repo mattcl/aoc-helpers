@@ -19,7 +19,10 @@ where
     G: Num + Ord + PartialOrd,
 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.cost.cmp(&self.cost).then_with(|| other.id.cmp(&self.id))
+        other
+            .cost
+            .cmp(&self.cost)
+            .then_with(|| other.id.cmp(&self.id))
     }
 }
 
@@ -40,7 +43,7 @@ where
 {
     pub id: T,
     pub cost: G,
-    pub path: Vec<T>
+    pub path: Vec<T>,
 }
 
 impl<T, G> Ord for DPNode<T, G>
@@ -49,7 +52,10 @@ where
     G: Num + Ord + PartialOrd,
 {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.cost.cmp(&self.cost).then_with(|| other.id.cmp(&self.id))
+        other
+            .cost
+            .cmp(&self.cost)
+            .then_with(|| other.id.cmp(&self.id))
     }
 }
 
@@ -206,7 +212,7 @@ where
     cost_cache.cache_set(&start.id, G::zero());
     heap.push(start);
 
-    while let Some(DPNode {id, cost, path}) = heap.pop() {
+    while let Some(DPNode { id, cost, path }) = heap.pop() {
         if id == goal {
             return Some(path);
         }
@@ -244,21 +250,57 @@ mod tests {
     #[test]
     fn node_ordering() {
         let mut nodes = vec![
-            DNode {id: Location::new(0, 0), cost: 5_usize},
-            DNode {id: Location::new(0, 2), cost: 4_usize},
-            DNode {id: Location::new(0, 0), cost: 4_usize},
-            DNode {id: Location::new(0, 1), cost: 4_usize},
-            DNode {id: Location::new(1, 1), cost: 4_usize},
-            DNode {id: Location::new(1, 1), cost: 7_usize},
+            DNode {
+                id: Location::new(0, 0),
+                cost: 5_usize,
+            },
+            DNode {
+                id: Location::new(0, 2),
+                cost: 4_usize,
+            },
+            DNode {
+                id: Location::new(0, 0),
+                cost: 4_usize,
+            },
+            DNode {
+                id: Location::new(0, 1),
+                cost: 4_usize,
+            },
+            DNode {
+                id: Location::new(1, 1),
+                cost: 4_usize,
+            },
+            DNode {
+                id: Location::new(1, 1),
+                cost: 7_usize,
+            },
         ];
 
         let expected = vec![
-            DNode {id: Location::new(1, 1), cost: 7_usize},
-            DNode {id: Location::new(0, 0), cost: 5_usize},
-            DNode {id: Location::new(1, 1), cost: 4_usize},
-            DNode {id: Location::new(0, 2), cost: 4_usize},
-            DNode {id: Location::new(0, 1), cost: 4_usize},
-            DNode {id: Location::new(0, 0), cost: 4_usize},
+            DNode {
+                id: Location::new(1, 1),
+                cost: 7_usize,
+            },
+            DNode {
+                id: Location::new(0, 0),
+                cost: 5_usize,
+            },
+            DNode {
+                id: Location::new(1, 1),
+                cost: 4_usize,
+            },
+            DNode {
+                id: Location::new(0, 2),
+                cost: 4_usize,
+            },
+            DNode {
+                id: Location::new(0, 1),
+                cost: 4_usize,
+            },
+            DNode {
+                id: Location::new(0, 0),
+                cost: 4_usize,
+            },
         ];
         nodes.sort();
 

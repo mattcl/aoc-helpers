@@ -58,7 +58,9 @@ impl std::fmt::Display for AocError {
             AocError::InputMissing(ref input) => {
                 write!(f, "specified input was missing: {}", input)
             }
-            AocError::ParseDirectionError(ref msg) => write!(f, "failed to parse Direction: {}", msg),
+            AocError::ParseDirectionError(ref msg) => {
+                write!(f, "failed to parse Direction: {}", msg)
+            }
             AocError::ParseLocationError(ref msg) => write!(f, "failed to parse Location: {}", msg),
 
             // Generic

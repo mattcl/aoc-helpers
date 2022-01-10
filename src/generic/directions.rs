@@ -1,9 +1,8 @@
 //! This module contains several Enums representing different sets compass
 //! directions.
-use std::{fmt, str::FromStr, convert::TryFrom};
+use std::{convert::TryFrom, fmt, str::FromStr};
 
 use crate::error::AocError;
-
 
 /// Driections is an enum of both the Cardinal and Ordinal directions. It can
 /// be parsed from various string representations
@@ -48,7 +47,7 @@ impl FromStr for Direction {
             "southwest" | "sw" => Self::SouthWest,
             "west" | "w" => Self::West,
             "northwest" | "nw" => Self::NorthWest,
-            _ => return Err(AocError::ParseDirectionError(s.to_string()))
+            _ => return Err(AocError::ParseDirectionError(s.to_string())),
         })
     }
 }
@@ -191,7 +190,7 @@ impl FromStr for Cardinal {
             Direction::South => Self::South,
             Direction::East => Self::East,
             Direction::West => Self::West,
-            _ => return Err(AocError::ParseDirectionError(s.to_string()))
+            _ => return Err(AocError::ParseDirectionError(s.to_string())),
         })
     }
 }
@@ -205,7 +204,7 @@ impl TryFrom<char> for Cardinal {
             's' => Ok(Self::South),
             'e' => Ok(Self::East),
             'w' => Ok(Self::West),
-            _ => Err(AocError::ParseDirectionError(value.to_string()))
+            _ => Err(AocError::ParseDirectionError(value.to_string())),
         }
     }
 }
