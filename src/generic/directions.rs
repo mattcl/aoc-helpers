@@ -217,7 +217,7 @@ impl TryFrom<char> for Cardinal {
 ///      +---+
 /// nw  /     \  ne
 ///    +       +
-/// se  \     /  se
+/// sw  \     /  se
 ///      +---+
 ///        s
 /// ```
@@ -283,7 +283,7 @@ impl fmt::Display for HorizHex {
 ///   |       |
 ///   +       +
 ///    \     /
-/// se  \   /  se
+/// sw  \   /  se
 ///      \ /
 ///       +
 /// ```

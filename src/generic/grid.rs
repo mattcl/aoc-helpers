@@ -1,4 +1,4 @@
-//! Grids are collections of elements indexed by [Location]
+//! Grids are collections of elements indexed by a given location type
 use itertools::Itertools;
 
 use crate::error::{AocError, Result};
@@ -6,7 +6,7 @@ use std::{convert::TryFrom, fmt::{self, Debug, Display}};
 
 use super::Location;
 
-/// Structs implementing `GridLike` support accesses by [Location]
+/// Structs implementing `GridLike` support accesses by a given location type
 pub trait GridLike {
     /// The type of elements stored by this grid-like thing
     type Item;

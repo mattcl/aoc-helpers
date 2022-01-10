@@ -258,7 +258,7 @@ impl<T> HexLocation<T> {
 ///      +---+
 /// nw  /     \  ne
 ///    +       +
-/// se  \     /  se
+/// sw  \     /  se
 ///      +---+
 ///        s
 /// ```
@@ -305,7 +305,7 @@ impl HexLocation<HorizHex> {
 ///   |       |
 ///   +       +
 ///    \     /
-/// se  \   /  se
+/// sw  \   /  se
 ///      \ /
 ///       +
 /// ```
