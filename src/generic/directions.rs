@@ -210,7 +210,9 @@ impl TryFrom<char> for Cardinal {
 }
 
 /// HorizHex is an enum of compass directions that represent valid faces of a
-/// hexagon with flat edges north and south as in the following diagram:
+/// hexagon with flat edges north and south.
+///
+/// See the following diagram:
 /// ```text
 ///        n
 ///      +---+
@@ -270,7 +272,9 @@ impl fmt::Display for HorizHex {
 }
 
 /// VertHex is an enum of compass directions that represent valid faces of a
-/// hexagon with flat edges west and east as in the following diagram:
+/// hexagon with flat edges west and east.
+///
+/// See the following diagram:
 /// ```text
 ///       +
 ///      / \
