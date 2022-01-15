@@ -4,8 +4,9 @@ use std::{convert::TryFrom, fmt, str::FromStr};
 
 use crate::error::AocError;
 
-/// Driections is an enum of both the Cardinal and Ordinal directions. It can
-/// be parsed from various string representations
+/// Driections is an enum of both the Cardinal and Ordinal directions.
+///
+/// It can be parsed from various string representations.
 ///
 /// Example:
 /// ```
@@ -21,6 +22,18 @@ use crate::error::AocError;
 /// }
 ///
 /// // etc..
+/// ```
+///
+/// Additionally, this enum acts as the foundation for other direction enums
+/// that are subsets of the combination of Cardinal and Ordinal directions. As
+/// such, conversions exist from the subset types to this type.
+///
+/// i.e.:
+///
+/// ```
+/// use aoc_helpers::generic::directions::{Direction, HorizHexDir};
+///
+/// assert_eq!(Direction::NorthEast, HorizHexDir::NorthEast.into())
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 pub enum Direction {

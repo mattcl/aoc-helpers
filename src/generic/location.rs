@@ -274,6 +274,17 @@ impl<T> HexLocation<T> {
 pub type HorizHexLoc = HexLocation<HorizHexDir>;
 
 impl HexLocation<HorizHexDir> {
+    /// An array of [HorizHexDir] for use when iterating over neighbors.
+    ///
+    /// The order in this case is `N -> NE -> SE -> S -> SW -> NW`
+    pub const NEIGHBOR_ORDER: [HorizHexDir; 6] = [
+        HorizHexDir::North,
+        HorizHexDir::NorthEast,
+        HorizHexDir::SouthEast,
+        HorizHexDir::South,
+        HorizHexDir::SouthWest,
+        HorizHexDir::NorthWest,
+    ];
     /// Given a reference to a [HorizHexDir], return the neighbor in that direction.
     ///
     /// # Examples
@@ -294,6 +305,13 @@ impl HexLocation<HorizHexDir> {
             HorizHexDir::SouthEast => (self.q + 1, self.r).into(),
             HorizHexDir::SouthWest => (self.q - 1, self.r + 1).into(),
         }
+    }
+
+    /// Yields an iterator over the neighbors of this location.
+    ///
+    /// The order in this case is `N -> NE -> SE -> S -> SW -> NW`
+    pub fn neighbors(&self) -> impl Iterator<Item = Self> + '_ {
+        Self::NEIGHBOR_ORDER.iter().map(move |dir| self.get_neighbor(dir))
     }
 }
 
@@ -320,6 +338,18 @@ impl HexLocation<HorizHexDir> {
 pub type VertHexLoc = HexLocation<VertHexDir>;
 
 impl HexLocation<VertHexDir> {
+    /// An array of [VertHexDir] for use when iterating over neighbors.
+    ///
+    /// The order in this case is `E -> NE -> NW -> W -> SW -> SE`
+    pub const NEIGHBOR_ORDER: [VertHexDir; 6] = [
+        VertHexDir::East,
+        VertHexDir::NorthEast,
+        VertHexDir::NorthWest,
+        VertHexDir::West,
+        VertHexDir::SouthWest,
+        VertHexDir::SouthEast,
+    ];
+
     /// Given a reference to a [VertHexDir], return the neighbor in that direction.
     ///
     /// # Examples
@@ -340,6 +370,13 @@ impl HexLocation<VertHexDir> {
             VertHexDir::NorthWest => (self.q, self.r - 1).into(),
             VertHexDir::SouthWest => (self.q - 1, self.r + 1).into(),
         }
+    }
+
+    /// Yields an iterator over the neighbors of this location.
+    ///
+    /// The order in this case is `E -> NE -> NW -> W -> SW -> SE`
+    pub fn neighbors(&self) -> impl Iterator<Item = Self> + '_ {
+        Self::NEIGHBOR_ORDER.iter().map(move |dir| self.get_neighbor(dir))
     }
 }
 
