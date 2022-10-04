@@ -7,6 +7,7 @@ use std::str::FromStr;
 use crate::error::{AocError, Result};
 
 #[macro_export]
+#[deprecated]
 macro_rules! aoc_bench {
     // "standard" solution with two distinct parts
     ($name:ident, $solver:ty, $part1_desc:literal, $part2_desc:literal) => {
@@ -56,6 +57,7 @@ macro_rules! aoc_bench {
 /// }
 /// ```
 #[macro_export]
+#[deprecated]
 macro_rules! aoc_benches {
     ($comb_seconds:literal, $(($name:ident, $solver:ty, $($description:literal),+)),+) => {
         use criterion::{criterion_group, Criterion};
@@ -95,6 +97,7 @@ macro_rules! aoc_benches {
 /// use aoc_helpers::util::load_input;
 /// let lines: Vec<String> = load_input("002").expect("could not load input");
 /// ```
+#[deprecated]
 pub fn load_input(default_day: &str) -> Result<Vec<String>> {
     //
     // examples/003_toboggan-trajectory/input
@@ -111,6 +114,7 @@ pub fn load_input(default_day: &str) -> Result<Vec<String>> {
     })
 }
 
+#[deprecated]
 pub fn load_named_input(day: &str, name: &str) -> Result<Vec<String>> {
     //
     // examples/003_toboggan-trajectory/<name>
@@ -129,11 +133,13 @@ pub fn load_named_input(day: &str, name: &str) -> Result<Vec<String>> {
     Err(AocError::InputMissing(format!("{}: '{}'", day, name)))
 }
 
+#[deprecated]
 pub fn load_external_input(key: &str) -> Result<Vec<String>> {
     let path = env::var(key)?;
     load_lines(&path)
 }
 
+#[deprecated]
 pub fn load_lines(file: &str) -> Result<Vec<String>> {
     let mut lines = Vec::new();
     for line in BufReader::new(File::open(Path::new(file))?).lines() {
@@ -143,12 +149,14 @@ pub fn load_lines(file: &str) -> Result<Vec<String>> {
     Ok(lines)
 }
 
+#[deprecated]
 pub fn parse_input<T: FromStr>(
     input: &[String],
 ) -> std::result::Result<Vec<T>, <T as FromStr>::Err> {
     input.iter().map(|l| T::from_str(l)).collect()
 }
 
+#[deprecated]
 pub fn test_input(input: &str) -> Vec<String> {
     input
         .trim()

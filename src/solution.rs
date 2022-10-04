@@ -30,6 +30,7 @@ use crate::load_input;
 /// );
 /// ```
 #[derive(Debug, Serialize, PartialEq)]
+#[deprecated]
 pub struct Solution<T, G>
 where
     T: Display + Serialize + PartialEq,
@@ -97,6 +98,7 @@ where
 /// This trait is intended to enforce a standard interface for solutions such
 /// that they are easier to consume by various components (examples, tests,
 /// benchmarks, etc.).
+#[deprecated]
 pub trait Solver: TryFrom<Vec<String>>
 where
     <Self as TryFrom<Vec<String>>>::Error: Debug,
