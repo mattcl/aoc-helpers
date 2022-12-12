@@ -69,6 +69,39 @@ where
     }
 }
 
+#[derive(Debug, Clone, Default, Eq, PartialEq)]
+pub struct DASTNode<T, G>
+where
+    G: Num,
+{
+    pub id: T,
+    pub cost: G,
+    pub path: G,
+}
+
+impl<T, G> Ord for DASTNode<T, G>
+where
+    T: Ord + PartialOrd + Eq + PartialEq,
+    G: Num + Ord + PartialOrd,
+{
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other
+            .cost
+            .cmp(&self.cost)
+            .then_with(|| other.id.cmp(&self.id))
+    }
+}
+
+impl<T, G> PartialOrd for DASTNode<T, G>
+where
+    T: Ord + PartialOrd + Eq + PartialEq,
+    G: Num + Ord + PartialOrd,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct DEdge<T, G>
 where
