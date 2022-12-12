@@ -38,14 +38,14 @@ impl Location {
 
     /// Given a number of rows, get the representation of this [Location] as
     /// an index into a row-major grid
-    pub fn as_rm_index(&self, num_rows: usize) -> usize {
-        self.row * num_rows + self.col
+    pub fn as_rm_index(&self, num_cols: usize) -> usize {
+        self.row * num_cols + self.col
     }
 
     /// Given an index and number of rows, construct a [Location] from an index
     /// into a row-major grid
-    pub fn from_rm_index(idx: usize, num_rows: usize) -> Self {
-        Location::new(idx / num_rows, idx % num_rows)
+    pub fn from_rm_index(idx: usize, num_cols: usize) -> Self {
+        Location::new(idx / num_cols, idx % num_cols)
     }
 
     pub fn manhattan_dist(&self, other: &Self) -> usize {
@@ -311,7 +311,9 @@ impl HexLocation<HorizHexDir> {
     ///
     /// The order in this case is `N -> NE -> SE -> S -> SW -> NW`
     pub fn neighbors(&self) -> impl Iterator<Item = Self> + '_ {
-        Self::NEIGHBOR_ORDER.iter().map(move |dir| self.get_neighbor(dir))
+        Self::NEIGHBOR_ORDER
+            .iter()
+            .map(move |dir| self.get_neighbor(dir))
     }
 }
 
@@ -376,7 +378,9 @@ impl HexLocation<VertHexDir> {
     ///
     /// The order in this case is `E -> NE -> NW -> W -> SW -> SE`
     pub fn neighbors(&self) -> impl Iterator<Item = Self> + '_ {
-        Self::NEIGHBOR_ORDER.iter().map(move |dir| self.get_neighbor(dir))
+        Self::NEIGHBOR_ORDER
+            .iter()
+            .map(move |dir| self.get_neighbor(dir))
     }
 }
 

@@ -145,17 +145,17 @@ where
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
 {
     elements: Vec<G>,
-    row_count: usize,
+    col_count: usize,
 }
 
 impl<G> DefaultLocationCache<G>
 where
     G: Num + Bounded + Ord + PartialOrd + Clone + Copy,
 {
-    pub fn new(size: usize, row_count: usize) -> Self {
+    pub fn new(size: usize, col_count: usize) -> Self {
         Self {
             elements: vec![G::max_value(); size],
-            row_count,
+            col_count,
         }
     }
 }
@@ -167,11 +167,11 @@ where
     type Cost = G;
 
     fn cache_get(&self, id: &Location) -> Self::Cost {
-        self.elements[id.as_rm_index(self.row_count)]
+        self.elements[id.as_rm_index(self.col_count)]
     }
 
     fn cache_set(&mut self, id: &Location, val: Self::Cost) {
-        self.elements[id.as_rm_index(self.row_count)] = val;
+        self.elements[id.as_rm_index(self.col_count)] = val;
     }
 }
 
