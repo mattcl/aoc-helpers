@@ -105,6 +105,18 @@ impl Location {
         Some((self.row + 1, self.col).into())
     }
 
+    pub fn south_east(&self) -> Option<Location> {
+        Some((self.row + 1, self.col + 1).into())
+    }
+
+    pub fn south_west(&self) -> Option<Location> {
+        if self.col == 0 {
+            return None;
+        }
+
+        Some((self.row + 1, self.col - 1).into())
+    }
+
     pub fn west(&self) -> Option<Location> {
         if self.col == 0 {
             return None;
